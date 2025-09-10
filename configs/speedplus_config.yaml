@@ -1,0 +1,78 @@
+# SPEED+ Dataset Configuration with Dynamic Visibility Masking Support
+
+data:
+  dataset: "speedplus"
+  json_path: "path/to/speedplus/annotations.json"
+  keypoints_path: "path/to/speedplus/keypoints_template.xlsx"
+  
+  # 数据增强配置
+  augment_visibility: false  # 是否启用可见性数据增强（随机遮挡）
+  
+  # 数据加载配置
+  batch_size: 32
+  num_workers: 4
+  stride: 1  # 数据采样步长
+
+model:
+  # 模型基础配置
+  name: "GCNdiff"
+  hid_dim: 128
+  emd_dim: 512
+  coords_dim: [2, 3]  # 输入2D，输出3D
+  num_layer: 6
+  n_head: 8
+  dropout: 0.1
+  n_pts: 11  # SPEED+关键点数量
+  var_type: "fixedsmall"
+  
+  # 动态mask配置
+  mask_strategy: "dynamic"  # 启用动态mask策略
+  ema_rate: 0.999
+  ema: true
+  resamp_with_conv: true
+
+training:
+  # 基础训练配置
+  epochs: 200
+  lr: 1e-4
+  batch_size: 32
+  
+  # 损失函数配置
+  mpjpe_weight: 1.0      # MPJPE损失权重
+  p_mpjpe_weight: 0.5    # P-MPJPE损失权重
+  
+  # 可见性mask配置
+  use_strict_masking: true  # true: 完全忽略不可见关键点, false: 使用加权损失
+  weight_invisible: 0.1     # 不可见关键点权重（仅当use_strict_masking=false时使用）
+  
+  # 验证配置
+  val_interval: 10  # 验证间隔（epoch）
+
+diffusion:
+  # 扩散模型参数
+  beta_schedule: "linear"
+  beta_start: 0.0001
+  beta_end: 0.02
+  num_diffusion_timesteps: 1000
+
+evaluation:
+  # 评估指标
+  metrics: ["mpjpe", "p_mpjpe", "mpjpe_visible", "p_mpjpe_visible"]
+  
+  # 可见性分析
+  analyze_by_visibility: true  # 是否按可见度分析性能
+
+# 兼容原有配置格式
+optim:
+  decay: 60
+  optimizer: "Adam"
+  lr: 0.0001
+  lr_gamma: 0.9
+  eps: 0.00000001
+  amsgrad: false
+  grad_clip: 1.0
+
+testing:
+  test_times: 1
+  test_timesteps: 2
+  test_num_diffusion_timesteps: 24
