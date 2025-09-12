@@ -11,10 +11,11 @@ import torch
 import torch.utils.data as data
 import torch.backends.cudnn as cudnn
 
-from models.gcnpose import GCNpose, adj_mx_from_edges
-from models.gcndiff import GCNdiff, adj_mx_from_edges
+from models.gcnpose import GCNpose
+from models.gcndiff import GCNdiff
 from models.ema import EMAHelper
 
+from common.graph_utils import adj_mx_from_edges, adj_mx_from_edges_speedplus, adj_mx_from_skeleton
 from common.utils import *
 from common.utils_diff import get_beta_schedule, generalized_steps
 from common.generators import PoseGenerator_gmm_speedplus
@@ -87,14 +88,7 @@ class Diffpose(object):
             
             # SPEED+没有动作分类
             self.action_filter = None
-            
-        elif config.data.dataset == "human36m":
-            # 原有的human3.6m处理逻辑（保持不变）
-            from common.h36m_dataset import Human36mDataset, TRAIN_SUBJECTS, TEST_SUBJECTS
-            dataset = Human36mDataset(config.data.dataset_path)
-            self.subjects_train = TRAIN_SUBJECTS
-            self.subjects_test = TEST_SUBJECTS
-            # ... 原有逻辑
+        
         else:
             raise KeyError('Invalid dataset')
 
@@ -132,13 +126,7 @@ class Diffpose(object):
             poses_test_2d, poses_test_3d, visibility_masks_test, actions_test, subjects_test = \
                 fetch_speedplus_with_visibility(self.subjects_test, self.dataset, self.keypoints_test, 
                                                stride=self.config.data.get('stride', 1))
-        else:
-            # 原有的human3.6m处理逻辑
-            from common.data_utils import fetch_me
-            poses_train_2d, poses_train_3d, actions_train, subjects_train = fetch_me(...)
-            # 为human3.6m创建默认的全可见mask
-            visibility_masks_train = [np.ones(17, dtype=bool) for _ in range(len(poses_train_2d))]
-            visibility_masks_test = [np.ones(17, dtype=bool) for _ in range(len(poses_test_2d))]
+                
 
         print(f'==> 训练数据: {len(poses_train_2d)} 个样本')
         print(f'==> 测试数据: {len(poses_test_2d)} 个样本')
@@ -379,9 +367,7 @@ class Diffpose(object):
                 [3, 8], [6, 8]
             ], dtype=torch.long)
             adj = adj_mx_from_edges(num_pts=11, edges=edges, sparse=False)
-        else:
-            # Human3.6M的邻接矩阵
-            adj = adj_mx_from_skeleton(self.skeleton)
+        
             
         self.model_diff = GCNdiff(adj.cuda(), config).cuda()
         self.model_diff = torch.nn.DataParallel(self.model_diff)
