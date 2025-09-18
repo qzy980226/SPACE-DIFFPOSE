@@ -1,0 +1,48 @@
+data:
+    dataset: "speedplus"
+    json_path: "./data/speedplus/annotations.json"
+    keypoints_path: "./data/speedplus/keypoints_3d.xlsx"
+    num_joints: 11
+    num_workers: 32
+    use_visibility: True  # 启用可见性处理
+    visibility_threshold: 0.5  # 可见性阈值
+
+model:
+    hid_dim: 96
+    emd_dim: 96
+    coords_dim: [5, 5]
+    num_layer: 5
+    n_head: 4
+    dropout: 0.25
+    n_pts: 11
+    ema_rate: 0.999
+    ema: True
+    resamp_with_conv: True
+    var_type: fixedsmall
+    use_visibility_embedding: True  # 使用可见性嵌入
+
+diffusion:
+    beta_schedule: linear
+    beta_start: 0.0001
+    beta_end: 0.001
+    num_diffusion_timesteps: 51
+
+training:
+    batch_size: 1024
+    n_epochs: 80
+    num_workers: 32
+    use_visibility_mask: True  # 训练时使用可见性掩码
+
+testing:
+    test_times: 1
+    test_timesteps: 2
+    test_num_diffusion_timesteps: 24
+
+optim:
+    decay: 60
+    optimizer: "Adam"
+    lr: 0.00002
+    lr_gamma: 0.9
+    eps: 0.00000001
+    amsgrad: false
+    grad_clip: 1.0
