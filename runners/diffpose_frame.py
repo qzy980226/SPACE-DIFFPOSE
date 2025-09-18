@@ -145,6 +145,15 @@ class Diffpose(object):
             poses_train, poses_train_2d, camerapara_train, visibility_train = fetch_speedplus(
                 self.subjects_train, self.dataset, self.keypoints_train, stride
             )
+            
+            train_generator = PoseGenerator_gmm_speedplus(
+                poses_train, poses_train_2d, camerapara_train, visibility_train,
+                augment_uncertainty=True,  # 训练时启用增强
+                augment_prob=0.5,          # 50%的概率应用增强
+                uncertainty_scale=50,       # 方差扩大50倍
+                num_uncertain_joints=2      # 每次选择2个关键点
+            )
+            
             data_loader = train_loader = data.DataLoader(
                 PoseGenerator_gmm_speedplus(
                     poses_train, poses_train_2d, camerapara_train, visibility_train
@@ -269,6 +278,11 @@ class Diffpose(object):
         if config.data.dataset == "speedplus":
             poses_valid, poses_valid_2d, camerapara_valid, visibility_valid = fetch_speedplus(
                 self.subjects_test, self.dataset, self.keypoints_test, stride
+            )
+
+            test_generator = PoseGenerator_gmm_speedplus(
+                poses_valid, poses_valid_2d, camerapara_valid, visibility_valid,
+                augment_uncertainty=False  # 测试时禁用增强
             )
 
             data_loader = valid_loader = data.DataLoader(

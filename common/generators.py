@@ -22,6 +22,12 @@ class PoseGenerator_gmm_speedplus(Dataset):
         
         self._kernel_n = self._poses_2d_gmm.shape[2] if len(self._poses_2d_gmm.shape) > 3 else 1
 
+        # 数据增强参数
+        self.augment_uncertainty = augment_uncertainty
+        self.augment_prob = augment_prob
+        self.uncertainty_scale = uncertainty_scale
+        self.num_uncertain_joints = num_uncertain_joints
+
         # SPEED+: 中心化3D坐标
         self._poses_3d[:,:,:] = self._poses_3d[:,:,:] - self._poses_3d[:,:1,:]
 
@@ -37,6 +43,25 @@ class PoseGenerator_gmm_speedplus(Dataset):
         if len(self._poses_2d_gmm.shape) > 3:
             # GMM格式处理
             out_pose_2d_gmm = self._poses_2d_gmm[index]  # (11, n_kernels, 5)
+            
+            if self.augment_uncertainty and np.random.random() < self.augment_prob:
+                # 找出所有可见的关键点
+                visible_joints = np.where(out_visibility > 0)[0]
+                
+                if len(visible_joints) >= self.num_uncertain_joints:
+                    # 随机选择要增加不确定性的关键点
+                    uncertain_joints = np.random.choice(
+                        visible_joints, 
+                        size=min(self.num_uncertain_joints, len(visible_joints)),
+                        replace=False
+                    )
+                    
+                    # 对选中的关键点增加不确定性
+                    for joint_idx in uncertain_joints:
+                        # 扩大所有核的方差
+                        out_pose_2d_gmm[joint_idx, :, 3:5] *= self.uncertainty_scale
+            
+            
             out_pose_2d_kernel = np.zeros([out_pose_2d_gmm.shape[0], out_pose_2d_gmm.shape[2]])
             
             for i in range(out_pose_2d_gmm.shape[0]):
@@ -89,3 +114,16 @@ class PoseGenerator_gmm_speedplus(Dataset):
 
     def __len__(self):
         return len(self._poses_3d)
+    
+    def set_augmentation(self, enabled=True):
+        """动态启用/禁用数据增强"""
+        self.augment_uncertainty = enabled
+        
+    def set_augmentation_params(self, prob=None, scale=None, num_joints=None):
+        """动态调整增强参数"""
+        if prob is not None:
+            self.augment_prob = prob
+        if scale is not None:
+            self.uncertainty_scale = scale
+        if num_joints is not None:
+            self.num_uncertain_joints = num_joints

@@ -4,8 +4,20 @@ data:
     keypoints_path: "./data/speedplus/keypoints_3d.xlsx"
     num_joints: 11
     num_workers: 32
-    use_visibility: True  # 启用可见性处理
-    visibility_threshold: 0.5  # 可见性阈值
+    use_visibility: True
+    visibility_threshold: 0.5
+    
+    # 不确定性增强配置
+    augmentation:
+        enabled: True                   # 是否启用不确定性增强
+        augment_prob: 0.5              # 应用增强的概率
+        uncertainty_scale: 50          # 方差扩大倍数
+        num_uncertain_joints: 2        # 每次增强的关键点数量
+        scale_schedule:                # 可选：随epoch变化的方差倍数
+            enabled: False
+            initial: 10                # 初始倍数
+            final: 100                 # 最终倍数
+            warmup_epochs: 10          # 线性增长的epoch数
 
 model:
     hid_dim: 96
@@ -19,7 +31,7 @@ model:
     ema: True
     resamp_with_conv: True
     var_type: fixedsmall
-    use_visibility_embedding: True  # 使用可见性嵌入
+    use_visibility_embedding: True
 
 diffusion:
     beta_schedule: linear
@@ -31,12 +43,19 @@ training:
     batch_size: 1024
     n_epochs: 80
     num_workers: 32
-    use_visibility_mask: True  # 训练时使用可见性掩码
+    use_visibility_mask: True
+    
+    # 训练策略
+    curriculum:
+        enabled: False                 # 是否使用课程学习
+        easy_epochs: 20               # 前期不使用增强的epoch数
+        transition_epochs: 10         # 逐渐增加增强的epoch数
 
 testing:
     test_times: 1
     test_timesteps: 2
     test_num_diffusion_timesteps: 24
+    use_augmentation: False           # 测试时是否使用增强（通常为False）
 
 optim:
     decay: 60
