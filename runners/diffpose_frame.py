@@ -166,7 +166,7 @@ class Diffpose(object):
             self.model_pose.load_state_dict(states[0])
         else:
             logging.info('initialize model randomly')
-
+              
     def train(self):
         cudnn.benchmark = True
 
@@ -189,10 +189,8 @@ class Diffpose(object):
                 num_uncertain_joints=2      # 每次选择2个关键点
             )
             
-            data_loader = train_loader = data.DataLoader(
-                PoseGenerator_gmm_speedplus(
-                    poses_train, poses_train_2d, camerapara_train, visibility_train
-                ),
+            data_loader = data.DataLoader(
+                train_generator,
                 batch_size=config.training.batch_size, shuffle=True,
                 num_workers=config.training.num_workers, pin_memory=True
             )
@@ -238,6 +236,12 @@ class Diffpose(object):
                 e = e * targets_noise_scale
                 a = (1-b).cumprod(dim=0).index_select(0, t).view(-1, 1, 1)
                 x = x * a.sqrt() + e * (1.0 - a).sqrt()
+                
+                if i == 0 and epoch == 0:
+                    print(f"\n第一个样本的前11个关键点:")
+                    print(f"targets_uvxyz[0, :11]:\n{targets_uvxyz[0, :11]}")
+                    print(f"  Visibility: {visibility[0].cpu().numpy()}")
+                    print(f"  Visible joints: {visibility[0].sum().item()}/11")
                 
                 # 预测噪声，传入可见性信息
                 output_noise = self.model_diff(x, src_mask, t.float(), 0, visibility)
