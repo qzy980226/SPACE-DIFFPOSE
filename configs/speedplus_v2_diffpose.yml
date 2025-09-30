@@ -1,0 +1,68 @@
+data:
+    dataset: "speedplus_v2"
+    train_json_path: "/root/autodl-tmp/speedplusv2/synthetic/train.json"
+    kpts_mat_path: "/root/autodl-tmp/speedplusv2/kpts.mat"
+    gmm_data_path: "/root/autodl-tmp/resulting/"
+    num_joints: 11
+    num_workers: 32
+    use_visibility: True
+    visibility_threshold: 0.5
+    
+    # 不确定性增强配置 - 必需！
+    augmentation:
+        enabled: True                   # 是否启用不确定性增强
+        augment_prob: 0.5              # 应用增强的概率
+        uncertainty_scale: 50          # 方差扩大倍数
+        num_uncertain_joints: 2        # 每次增强的关键点数量
+        scale_schedule:                # 可选：随epoch变化的方差倍数
+            enabled: False
+            initial: 10                # 初始倍数
+            final: 100                 # 最终倍数
+            warmup_epochs: 10          # 线性增长的epoch数
+
+model:
+    hid_dim: 96
+    emd_dim: 96
+    coords_dim: [5, 5]
+    num_layer: 5
+    n_head: 4
+    dropout: 0.25
+    n_pts: 11
+    ema_rate: 0.999
+    ema: True
+    resamp_with_conv: True  # ← 必需！用于扩散模型的重采样
+    var_type: fixedsmall    # ← 必需！扩散过程的方差类型
+    use_visibility_embedding: True
+
+diffusion:
+    beta_schedule: linear
+    beta_start: 0.0001
+    beta_end: 0.001
+    num_diffusion_timesteps: 51
+
+training:
+    batch_size: 1024
+    n_epochs: 80
+    num_workers: 32
+    use_visibility_mask: True
+    
+    # 训练策略 - 可选但有用
+    curriculum:
+        enabled: False                 # 是否使用课程学习
+        easy_epochs: 20               # 前期不使用增强的epoch数
+        transition_epochs: 10         # 逐渐增加增强的epoch数
+
+testing:
+    test_times: 1
+    test_timesteps: 2
+    test_num_diffusion_timesteps: 24
+    use_augmentation: False           # 测试时是否使用增强（通常为False）
+
+optim:
+    decay: 60
+    optimizer: "Adam"
+    lr: 0.00002
+    lr_gamma: 0.9
+    eps: 0.00000001
+    amsgrad: false  # ← 保留，Adam优化器的变体选项
+    grad_clip: 1.0

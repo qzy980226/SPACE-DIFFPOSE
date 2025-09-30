@@ -48,7 +48,7 @@ class Diffpose(object):
         self.num_timesteps = betas.shape[0]
 
     def prepare_data(self):
-        args, config = self.args, self.config
+        """args, config = self.args, self.config
         print('==> Using settings {}'.format(args))
         print('==> Using configures {}'.format(config))
         
@@ -78,6 +78,41 @@ class Diffpose(object):
             self.action_filter = None
         else:
             raise KeyError('Invalid dataset')
+        """
+        args, config = self.args, self.config
+    
+        if config.data.dataset == "speedplus_v2":
+            from common.speedplus_dataset_v2 import SpeedPlusV2Dataset
+            from common.data_utils_v2 import create_2d_data_speedplus_v2, fetch_speedplus_v2
+            
+            # 加载SPEED+ V2数据集
+            dataset = SpeedPlusV2Dataset(
+                train_json_path=config.data.train_json_path,
+                kpts_mat_path=config.data.kpts_mat_path,
+                gmm_data_path=config.data.gmm_data_path
+            )
+            
+            self.subjects_train = ['spacecraft']
+            self.subjects_test = ['spacecraft']
+            self.dataset = dataset
+            
+            keypoints_gmm = create_2d_data_speedplus_v2(dataset)
+        
+            # 分割训练/测试（理由：需要验证集评估）
+            all_actions = list(dataset['spacecraft'].keys())
+            split_idx = int(len(all_actions) * 0.8)
+            
+            train_actions = all_actions[:split_idx]
+            test_actions = all_actions[split_idx:]
+            
+            self.keypoints_train = {
+                'spacecraft': {k: keypoints_gmm['spacecraft'][k] for k in train_actions}
+            }
+            self.keypoints_test = {
+                'spacecraft': {k: keypoints_gmm['spacecraft'][k] for k in test_actions}
+            }
+            
+            self.action_filter = None
 
     # create diffusion model SPEED+版本
     def create_diffusion_model(self, model_path = None):
