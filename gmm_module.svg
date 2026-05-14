@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 520" width="620" height="520"
+     font-family="'Times New Roman', Times, serif">
+
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <polygon points="0 0, 8 3.5, 0 7" fill="#333"/>
+    </marker>
+    <marker id="arr-blue" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <polygon points="0 0, 8 3.5, 0 7" fill="#3a6abf"/>
+    </marker>
+    <marker id="arr-green" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <polygon points="0 0, 8 3.5, 0 7" fill="#2a8a40"/>
+    </marker>
+    <marker id="arr-orange" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+      <polygon points="0 0, 8 3.5, 0 7" fill="#c05000"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="620" height="520" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="310" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#111">
+    GMM-based 2D Keypoint Representation
+  </text>
+  <text x="310" y="48" text-anchor="middle" font-size="11" fill="#555">
+    n_pts = 11 keypoints · K Gaussian components per keypoint
+  </text>
+
+  <!-- ── 1. INPUT: GMM Parameters ── -->
+  <rect x="170" y="66" width="280" height="52" rx="7"
+        fill="#e8edf7" stroke="#5a7abf" stroke-width="1.8"/>
+  <text x="310" y="86" text-anchor="middle" font-size="13" font-weight="bold" fill="#1a1a5e">
+    GMM Parameters
+  </text>
+  <text x="310" y="105" text-anchor="middle" font-size="10.5" fill="#444">
+    [n_pts, K, 5]  =  [11, K, (π, μ_u, μ_v, σ_u, σ_v)]
+  </text>
+
+  <!-- legend for the 5 fields, below input box -->
+  <text x="310" y="128" text-anchor="middle" font-size="9.5" fill="#666">
+    π: component weight · (μ_u, μ_v): 2D mean · (σ_u, σ_v): variance
+  </text>
+
+  <!-- arrow down -->
+  <line x1="310" y1="118" x2="310" y2="148" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ── 2. WEIGHTED SAMPLING ── -->
+  <rect x="170" y="148" width="280" height="58" rx="7"
+        fill="#fff3cd" stroke="#c8a000" stroke-width="1.8"/>
+  <text x="310" y="170" text-anchor="middle" font-size="13" font-weight="bold" fill="#5a3a00">
+    Weighted Sampling
+  </text>
+  <text x="310" y="188" text-anchor="middle" font-size="10.5" fill="#5a3a00">
+    k* ~ Categorical(π₁, π₂, …, π_K)
+  </text>
+  <text x="310" y="202" text-anchor="middle" font-size="9.5" fill="#8a6000">
+    per keypoint, per training step
+  </text>
+
+  <!-- arrow down to selected component -->
+  <line x1="310" y1="206" x2="310" y2="230" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ── 3. SELECTED COMPONENT ── -->
+  <rect x="170" y="230" width="280" height="40" rx="7"
+        fill="#e0e8ff" stroke="#3a5abf" stroke-width="1.5"/>
+  <text x="310" y="247" text-anchor="middle" font-size="12" font-weight="bold" fill="#1a1a5e">
+    Selected Component  k*
+  </text>
+  <text x="310" y="263" text-anchor="middle" font-size="10.5" fill="#333">
+    (μ_u,  μ_v,  σ_u,  σ_v)  per keypoint
+  </text>
+
+  <!-- split arrow left: mean -->
+  <line x1="250" y1="270" x2="160" y2="320" stroke="#3a6abf" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+  <!-- split arrow right: variance -->
+  <line x1="370" y1="270" x2="460" y2="320" stroke="#c05000" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+
+  <!-- ── 4a. 2D Mean (left) ── -->
+  <rect x="60" y="320" width="200" height="52" rx="7"
+        fill="#d0e4ff" stroke="#3a6abf" stroke-width="1.6"/>
+  <text x="160" y="341" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1a1a5e">
+    2D Coordinates
+  </text>
+  <text x="160" y="357" text-anchor="middle" font-size="11" fill="#1a1a5e">
+    (μ_u,  μ_v)
+  </text>
+  <text x="160" y="370" text-anchor="middle" font-size="9.5" fill="#444">
+    [n_pts, 2]
+  </text>
+
+  <!-- ── 4b. Variance (right) ── -->
+  <rect x="360" y="320" width="200" height="52" rx="7"
+        fill="#ffe0cc" stroke="#c05000" stroke-width="1.6"/>
+  <text x="460" y="341" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#7a2000">
+    Uncertainty
+  </text>
+  <text x="460" y="357" text-anchor="middle" font-size="11" fill="#7a2000">
+    (σ_u,  σ_v)
+  </text>
+  <text x="460" y="370" text-anchor="middle" font-size="9.5" fill="#7a2000">
+    [n_pts, 2]
+  </text>
+
+  <!-- arrows down to Concat -->
+  <line x1="160" y1="372" x2="160" y2="406" stroke="#3a6abf" stroke-width="1.5"/>
+  <line x1="160" y1="406" x2="248" y2="432" stroke="#3a6abf" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+
+  <line x1="460" y1="372" x2="460" y2="406" stroke="#c05000" stroke-width="1.5"/>
+  <line x1="460" y1="406" x2="372" y2="432" stroke="#c05000" stroke-width="1.5" marker-end="url(#arr-orange)"/>
+
+  <!-- label for 3D pose concatenation -->
+  <text x="310" y="420" text-anchor="middle" font-size="9.5" fill="#888">
+    ⊕ concat with 3D pose (x, y, z) → uvxyz [n_pts, 5]
+  </text>
+
+  <!-- ── 5. OUTPUT BOX ── -->
+  <!-- uvxyz output -->
+  <rect x="100" y="432" width="180" height="46" rx="7"
+        fill="#d4edda" stroke="#2a8a40" stroke-width="1.6"/>
+  <text x="190" y="451" text-anchor="middle" font-size="12" font-weight="bold" fill="#0a3a1a">
+    UV Coordinates
+  </text>
+  <text x="190" y="466" text-anchor="middle" font-size="10" fill="#0a3a1a">
+    → Diffusion input  [n_pts, 5]
+  </text>
+
+  <!-- noise scale output -->
+  <rect x="340" y="432" width="180" height="46" rx="7"
+        fill="#d4edda" stroke="#2a8a40" stroke-width="1.6"/>
+  <text x="430" y="451" text-anchor="middle" font-size="12" font-weight="bold" fill="#0a3a1a">
+    Noise Scale
+  </text>
+  <text x="430" y="466" text-anchor="middle" font-size="10" fill="#0a3a1a">
+    → Diffusion σ  [n_pts, 5]
+  </text>
+
+  <!-- arrows to downstream -->
+  <line x1="190" y1="478" x2="190" y2="500" stroke="#2a8a40" stroke-width="1.5" marker-end="url(#arr-green)"/>
+  <line x1="430" y1="478" x2="430" y2="500" stroke="#2a8a40" stroke-width="1.5" marker-end="url(#arr-green)"/>
+
+  <!-- downstream label -->
+  <text x="310" y="515" text-anchor="middle" font-size="11" fill="#2a8a40" font-style="italic">
+    → GCNdiff (Diffusion Model)
+  </text>
+
+  <!-- ── gaussian curve illustration inside sampling box ── -->
+  <!-- small sketch of 3 gaussians overlapping to illustrate GMM -->
+  <g transform="translate(60, 152)" opacity="0.55">
+    <!-- curve 1 -->
+    <path d="M5,28 Q18,2 31,28" stroke="#e05c00" stroke-width="1.2" fill="none"/>
+    <!-- curve 2 -->
+    <path d="M22,28 Q38,0 54,28" stroke="#3a6abf" stroke-width="1.2" fill="none"/>
+    <!-- curve 3 -->
+    <path d="M44,28 Q58,8 72,28" stroke="#2a8a40" stroke-width="1.2" fill="none"/>
+    <line x1="2" y1="28" x2="74" y2="28" stroke="#999" stroke-width="0.8"/>
+    <text x="38" y="40" text-anchor="middle" font-size="8" fill="#666">K components</text>
+  </g>
+
+  <!-- same on right side -->
+  <g transform="translate(488, 152)" opacity="0.55">
+    <path d="M5,28 Q18,2 31,28" stroke="#e05c00" stroke-width="1.2" fill="none"/>
+    <path d="M22,28 Q38,0 54,28" stroke="#3a6abf" stroke-width="1.2" fill="none"/>
+    <path d="M44,28 Q58,8 72,28" stroke="#2a8a40" stroke-width="1.2" fill="none"/>
+    <line x1="2" y1="28" x2="74" y2="28" stroke="#999" stroke-width="0.8"/>
+  </g>
+
+</svg>
