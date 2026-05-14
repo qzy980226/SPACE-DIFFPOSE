@@ -1,0 +1,283 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 1020" width="860" height="1020" font-family="'Times New Roman', Times, serif">
+
+  <!-- Background -->
+  <rect width="860" height="1020" fill="#ffffff"/>
+
+  <!-- ══════════════════════════════════════════════════════
+       TITLE
+  ══════════════════════════════════════════════════════ -->
+  <text x="430" y="36" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Graph-based Multi-Head Self-Attention Module</text>
+  <text x="430" y="56" text-anchor="middle" font-size="12" fill="#444">(GraAttenLayer · h=4, d_model=96, d_k=24, n_pts=11)</text>
+
+  <!-- ══════════════════════════════════════════════════════
+       OUTER GraAttenLayer BOX
+  ══════════════════════════════════════════════════════ -->
+  <rect x="30" y="68" width="800" height="940" rx="10" ry="10"
+        fill="#f7f9fc" stroke="#5a7abf" stroke-width="1.8" stroke-dasharray="6,3"/>
+  <text x="50" y="86" font-size="11" fill="#5a7abf" font-style="italic">GraAttenLayer</text>
+
+  <!-- ══════════════════════════════════════════════════════
+       INPUT
+  ══════════════════════════════════════════════════════ -->
+  <rect x="310" y="94" width="240" height="36" rx="6" fill="#e8edf7" stroke="#5a7abf" stroke-width="1.5"/>
+  <text x="430" y="108" text-anchor="middle" font-size="12" font-weight="bold" fill="#1a1a5e">Input  X</text>
+  <text x="430" y="123" text-anchor="middle" font-size="10.5" fill="#333">[B, 11, 96]</text>
+
+  <!-- INPUT → split arrow -->
+  <line x1="430" y1="130" x2="430" y2="148" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ══════════════════════════════════════════════════════
+       RESIDUAL branch (right side vertical line)
+  ══════════════════════════════════════════════════════ -->
+  <!-- vertical residual line from input down to Add circle -->
+  <line x1="760" y1="112" x2="760" y2="112" stroke="none"/>
+  <!-- horizontal from input box to residual line -->
+  <line x1="550" y1="112" x2="760" y2="112" stroke="#e05c00" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="760" y1="112" x2="760" y2="530" stroke="#e05c00" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="765" y="330" font-size="10" fill="#e05c00" font-style="italic">Residual</text>
+
+  <!-- ══════════════════════════════════════════════════════
+       SUBLAYER 0 : MultiHeadedAttention block
+  ══════════════════════════════════════════════════════ -->
+  <rect x="60" y="145" width="680" height="390" rx="8" fill="#eef2fb" stroke="#7a95d0" stroke-width="1.3" stroke-dasharray="4,2"/>
+  <text x="80" y="163" font-size="10.5" fill="#7a95d0" font-style="italic">SublayerConnection[0]  (LayerNorm → MultiHeadedAttention → Dropout)</text>
+
+  <!-- LayerNorm 0 -->
+  <rect x="310" y="168" width="240" height="32" rx="5" fill="#c8d8f8" stroke="#5a7abf" stroke-width="1.3"/>
+  <text x="430" y="188" text-anchor="middle" font-size="12" font-weight="bold" fill="#1a1a5e">Layer Norm</text>
+  <text x="430" y="200" text-anchor="middle" font-size="9.5" fill="#333">γ·(x−μ)/σ + β,  d=96</text>
+
+  <line x1="430" y1="200" x2="430" y2="218" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ── Q K V Linear projections ── -->
+  <!-- Q branch -->
+  <line x1="430" y1="218" x2="175" y2="218" stroke="#333" stroke-width="1.3"/>
+  <line x1="175" y1="218" x2="175" y2="236" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+  <!-- K branch -->
+  <line x1="430" y1="218" x2="430" y2="236" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+  <!-- V branch -->
+  <line x1="430" y1="218" x2="685" y2="218" stroke="#333" stroke-width="1.3"/>
+  <line x1="685" y1="218" x2="685" y2="236" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- Linear W_Q -->
+  <rect x="100" y="236" width="150" height="30" rx="5" fill="#b8ccf0" stroke="#4a6abf" stroke-width="1.3"/>
+  <text x="175" y="255" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1a1a5e">Linear  W_Q</text>
+  <!-- Linear W_K -->
+  <rect x="355" y="236" width="150" height="30" rx="5" fill="#b8ccf0" stroke="#4a6abf" stroke-width="1.3"/>
+  <text x="430" y="255" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1a1a5e">Linear  W_K</text>
+  <!-- Linear W_V -->
+  <rect x="610" y="236" width="150" height="30" rx="5" fill="#b8ccf0" stroke="#4a6abf" stroke-width="1.3"/>
+  <text x="685" y="255" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1a1a5e">Linear  W_V</text>
+  <!-- dim label below each -->
+  <text x="175" y="273" text-anchor="middle" font-size="9.5" fill="#333">96 → 96</text>
+  <text x="430" y="273" text-anchor="middle" font-size="9.5" fill="#333">96 → 96</text>
+  <text x="685" y="273" text-anchor="middle" font-size="9.5" fill="#333">96 → 96</text>
+
+  <!-- arrows down to Reshape -->
+  <line x1="175" y1="266" x2="175" y2="285" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="430" y1="266" x2="430" y2="285" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="685" y1="266" x2="685" y2="285" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- Reshape / split heads boxes -->
+  <rect x="100" y="285" width="150" height="28" rx="4" fill="#dde8fc" stroke="#4a6abf" stroke-width="1.1"/>
+  <text x="175" y="295" text-anchor="middle" font-size="10" fill="#222">Reshape → h heads</text>
+  <text x="175" y="308" text-anchor="middle" font-size="9.5" fill="#555">[B, 4, 11, 24]</text>
+
+  <rect x="355" y="285" width="150" height="28" rx="4" fill="#dde8fc" stroke="#4a6abf" stroke-width="1.1"/>
+  <text x="430" y="295" text-anchor="middle" font-size="10" fill="#222">Reshape → h heads</text>
+  <text x="430" y="308" text-anchor="middle" font-size="9.5" fill="#555">[B, 4, 11, 24]</text>
+
+  <rect x="610" y="285" width="150" height="28" rx="4" fill="#dde8fc" stroke="#4a6abf" stroke-width="1.1"/>
+  <text x="685" y="295" text-anchor="middle" font-size="10" fill="#222">Reshape → h heads</text>
+  <text x="685" y="308" text-anchor="middle" font-size="9.5" fill="#555">[B, 4, 11, 24]</text>
+
+  <!-- labels Q K V -->
+  <text x="80" y="302" font-size="13" font-weight="bold" fill="#2244aa">Q</text>
+  <text x="338" y="302" font-size="13" font-weight="bold" fill="#2244aa">K</text>
+  <text x="594" y="302" font-size="13" font-weight="bold" fill="#2244aa">V</text>
+
+  <!-- arrows into Scaled Dot-Product box -->
+  <line x1="175" y1="313" x2="175" y2="332" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="430" y1="313" x2="430" y2="332" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="685" y1="313" x2="685" y2="332" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- ── Scaled Dot-Product Attention box ── -->
+  <rect x="80" y="332" width="700" height="118" rx="8" fill="#e0e8ff" stroke="#3a5abf" stroke-width="1.5"/>
+  <text x="430" y="350" text-anchor="middle" font-size="12" font-weight="bold" fill="#1a1a5e">Scaled Dot-Product Attention  ×  h=4</text>
+
+  <!-- formula row -->
+  <text x="430" y="374" text-anchor="middle" font-size="12" fill="#222">scores = Q · Kᵀ / √d_k</text>
+  <text x="430" y="374" text-anchor="middle" font-size="12" fill="#222">scores = Q · Kᵀ / √d_k</text>
+  <text x="700" y="374" text-anchor="middle" font-size="10" fill="#666">[B, 4, 11, 11]</text>
+
+  <!-- mask note -->
+  <rect x="90" y="362" width="110" height="20" rx="3" fill="#fff3cd" stroke="#d4a800" stroke-width="1"/>
+  <text x="145" y="376" text-anchor="middle" font-size="9.5" fill="#7a5800">Padding Mask (opt.)</text>
+
+  <!-- softmax -->
+  <rect x="310" y="382" width="240" height="24" rx="4" fill="#c6d8ff" stroke="#3a5abf" stroke-width="1.2"/>
+  <text x="430" y="399" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1a1a5e">Softmax</text>
+
+  <line x1="430" y1="406" x2="430" y2="418" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- dropout -->
+  <rect x="350" y="418" width="160" height="22" rx="4" fill="#ffe8d6" stroke="#c05000" stroke-width="1.1"/>
+  <text x="430" y="433" text-anchor="middle" font-size="11" fill="#7a3000">Dropout  (p=0.1)</text>
+
+  <line x1="430" y1="440" x2="430" y2="450" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- attn × V -->
+  <text x="430" y="446" text-anchor="middle" font-size="11" fill="#333"> </text>
+  <text x="430" y="460" text-anchor="middle" font-size="12" fill="#222">p_attn · V      [B, 4, 11, 24]</text>
+
+  <!-- arrow out of attention box -->
+  <line x1="430" y1="450" x2="430" y2="462" stroke="#333" stroke-width="1.3"/>
+
+  <!-- arrow from attention box bottom to Concat -->
+  <line x1="430" y1="450" x2="430" y2="462" stroke="none"/>
+
+  <!-- ── Concat heads ── -->
+  <line x1="430" y1="450" x2="430" y2="464" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+  <rect x="310" y="464" width="240" height="28" rx="5" fill="#dde8fc" stroke="#4a6abf" stroke-width="1.2"/>
+  <text x="430" y="479" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1a1a5e">Concat  (4 heads)</text>
+  <text x="430" y="490" text-anchor="middle" font-size="9.5" fill="#333">[B, 11, 96]</text>
+
+  <line x1="430" y1="492" x2="430" y2="506" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- Linear W_O -->
+  <rect x="310" y="506" width="240" height="30" rx="5" fill="#b8ccf0" stroke="#4a6abf" stroke-width="1.3"/>
+  <text x="430" y="524" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1a1a5e">Linear  W_O  (96 → 96)</text>
+
+  <line x1="430" y1="536" x2="430" y2="550" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- Dropout after MHA -->
+  <rect x="350" y="550" width="160" height="22" rx="4" fill="#ffe8d6" stroke="#c05000" stroke-width="1.1"/>
+  <text x="430" y="565" text-anchor="middle" font-size="11" fill="#7a3000">Dropout  (p=0.25)</text>
+
+  <!-- arrow from dropout to Add circle -->
+  <line x1="430" y1="572" x2="430" y2="588" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- residual arrow from right side into Add circle -->
+  <line x1="760" y1="530" x2="760" y2="596" stroke="#e05c00" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="760" y1="596" x2="466" y2="596" stroke="#e05c00" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+
+  <!-- Add circle -->
+  <circle cx="430" cy="596" r="14" fill="#fff" stroke="#333" stroke-width="1.8"/>
+  <text x="430" y="601" text-anchor="middle" font-size="16" fill="#333">+</text>
+
+  <line x1="430" y1="610" x2="430" y2="626" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ══════════════════════════════════════════════════════
+       SUBLAYER 1 : GraphNet (feed-forward) block
+  ══════════════════════════════════════════════════════ -->
+
+  <!-- residual 2 branch horizontal from MHA output -->
+  <line x1="550" y1="619" x2="760" y2="619" stroke="#e05c00" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="760" y1="619" x2="760" y2="880" stroke="#e05c00" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+  <rect x="60" y="623" width="680" height="262" rx="8" fill="#eef7ee" stroke="#5aaa70" stroke-width="1.3" stroke-dasharray="4,2"/>
+  <text x="80" y="641" font-size="10.5" fill="#5aaa70" font-style="italic">SublayerConnection[1]  (LayerNorm → GraphNet → Dropout)</text>
+
+  <!-- LayerNorm 1 -->
+  <rect x="310" y="648" width="240" height="30" rx="5" fill="#b8e8c0" stroke="#3a8a50" stroke-width="1.3"/>
+  <text x="430" y="667" text-anchor="middle" font-size="12" font-weight="bold" fill="#0a3a1a">Layer Norm</text>
+
+  <line x1="430" y1="678" x2="430" y2="696" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- GraphNet box -->
+  <rect x="130" y="696" width="600" height="158" rx="8" fill="#d8f0dc" stroke="#3a8a50" stroke-width="1.4"/>
+  <text x="430" y="714" text-anchor="middle" font-size="12" font-weight="bold" fill="#0a3a1a">GraphNet  (Learnable Graph Convolution)</text>
+
+  <!-- A_hat -->
+  <rect x="148" y="722" width="120" height="40" rx="5" fill="#a8d8b0" stroke="#2a7a40" stroke-width="1.2"/>
+  <text x="208" y="738" text-anchor="middle" font-size="11" font-weight="bold" fill="#0a3a1a">A_hat</text>
+  <text x="208" y="752" text-anchor="middle" font-size="9.5" fill="#333">Parameter [11×11]</text>
+
+  <!-- Laplacian normalize -->
+  <rect x="290" y="722" width="170" height="40" rx="5" fill="#c0e8c8" stroke="#2a7a40" stroke-width="1.1"/>
+  <text x="375" y="739" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#0a3a1a">Laplacian Norm</text>
+  <text x="375" y="753" text-anchor="middle" font-size="9.5" fill="#333">D̂⁻½ · Â · D̂⁻½</text>
+
+  <!-- arrow A_hat to Laplacian -->
+  <line x1="268" y1="742" x2="290" y2="742" stroke="#333" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <!-- LAM_Gconv 1 -->
+  <rect x="148" y="782" width="280" height="32" rx="5" fill="#a8d8b0" stroke="#2a7a40" stroke-width="1.2"/>
+  <text x="288" y="797" text-anchor="middle" font-size="11" font-weight="bold" fill="#0a3a1a">LAM_Gconv₁ · Linear(96 → 192) · ReLU</text>
+
+  <!-- LAM_Gconv 2 -->
+  <rect x="148" y="830" width="280" height="32" rx="5" fill="#a8d8b0" stroke="#2a7a40" stroke-width="1.2"/>
+  <text x="288" y="845" text-anchor="middle" font-size="11" font-weight="bold" fill="#0a3a1a">LAM_Gconv₂ · Linear(192 → 96)</text>
+
+  <!-- arrows within GraphNet -->
+  <line x1="460" y1="742" x2="530" y2="742" stroke="#555" stroke-width="1.1"/>
+  <line x1="530" y1="742" x2="530" y2="780" stroke="#555" stroke-width="1.1"/>
+  <line x1="530" y1="780" x2="430" y2="780" stroke="#555" stroke-width="1.1" marker-end="url(#arr)"/>
+  <line x1="430" y1="780" x2="430" y2="782" stroke="#555" stroke-width="1.1"/>
+  <!-- also X input into gconv1 -->
+  <line x1="430" y1="696" x2="430" y2="722" stroke="#555" stroke-width="1.1"/>
+  <line x1="430" y1="722" x2="430" y2="740" stroke="#555" stroke-width="1"/>
+  <line x1="148" y1="740" x2="430" y2="740" stroke="#555" stroke-width="1"/>
+  <!-- X arrow into LAM_Gconv1 -->
+  <line x1="288" y1="763" x2="288" y2="782" stroke="#333" stroke-width="1.2" marker-end="url(#arr)"/>
+  <!-- LAM_Gconv1 → LAM_Gconv2 -->
+  <line x1="288" y1="814" x2="288" y2="830" stroke="#333" stroke-width="1.2" marker-end="url(#arr)"/>
+  <!-- output -->
+  <line x1="288" y1="862" x2="430" y2="862" stroke="#333" stroke-width="1.2"/>
+  <line x1="430" y1="862" x2="430" y2="876" stroke="#333" stroke-width="1.2" marker-end="url(#arr)"/>
+
+  <line x1="430" y1="854" x2="430" y2="868" stroke="none"/>
+
+  <!-- Dropout after GraphNet -->
+  <rect x="350" y="876" width="160" height="22" rx="4" fill="#ffe8d6" stroke="#c05000" stroke-width="1.1"/>
+  <text x="430" y="891" text-anchor="middle" font-size="11" fill="#7a3000">Dropout  (p=0.25)</text>
+
+  <line x1="430" y1="898" x2="430" y2="912" stroke="#333" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- residual arrow 2 into Add circle 2 -->
+  <line x1="760" y1="880" x2="760" y2="920" stroke="#e05c00" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="760" y1="920" x2="466" y2="920" stroke="#e05c00" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+
+  <!-- Add circle 2 -->
+  <circle cx="430" cy="920" r="14" fill="#fff" stroke="#333" stroke-width="1.8"/>
+  <text x="430" y="925" text-anchor="middle" font-size="16" fill="#333">+</text>
+
+  <line x1="430" y1="934" x2="430" y2="958" stroke="#333" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ══════════════════════════════════════════════════════
+       OUTPUT
+  ══════════════════════════════════════════════════════ -->
+  <rect x="310" y="958" width="240" height="36" rx="6" fill="#e8edf7" stroke="#5a7abf" stroke-width="1.5"/>
+  <text x="430" y="972" text-anchor="middle" font-size="12" font-weight="bold" fill="#1a1a5e">Output</text>
+  <text x="430" y="987" text-anchor="middle" font-size="10.5" fill="#333">[B, 11, 96]</text>
+
+  <!-- ══════════════════════════════════════════════════════
+       LEGEND
+  ══════════════════════════════════════════════════════ -->
+  <rect x="60" y="1000" width="740" height="14" rx="3" fill="none"/>
+  <rect x="60" y="1003" width="12" height="8" rx="1" fill="#b8ccf0" stroke="#4a6abf" stroke-width="1"/>
+  <text x="78" y="1011" font-size="9.5" fill="#333">Linear / Projection</text>
+  <rect x="175" y="1003" width="12" height="8" rx="1" fill="#ffe8d6" stroke="#c05000" stroke-width="1"/>
+  <text x="193" y="1011" font-size="9.5" fill="#333">Dropout</text>
+  <rect x="260" y="1003" width="12" height="8" rx="1" fill="#c8d8f8" stroke="#5a7abf" stroke-width="1"/>
+  <text x="278" y="1011" font-size="9.5" fill="#333">Layer Norm</text>
+  <rect x="368" y="1003" width="12" height="8" rx="1" fill="#e0e8ff" stroke="#3a5abf" stroke-width="1"/>
+  <text x="386" y="1011" font-size="9.5" fill="#333">Scaled Dot-Product Attention</text>
+  <rect x="558" y="1003" width="12" height="8" rx="1" fill="#a8d8b0" stroke="#2a7a40" stroke-width="1"/>
+  <text x="576" y="1011" font-size="9.5" fill="#333">Graph Conv (LAM)</text>
+  <line x1="670" y1="1007" x2="690" y2="1007" stroke="#e05c00" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="696" y="1011" font-size="9.5" fill="#333">Residual</text>
+
+  <!-- ══════════════════════════════════════════════════════
+       ARROWHEAD MARKERS
+  ══════════════════════════════════════════════════════ -->
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#333"/>
+    </marker>
+    <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#e05c00"/>
+    </marker>
+  </defs>
+
+</svg>
