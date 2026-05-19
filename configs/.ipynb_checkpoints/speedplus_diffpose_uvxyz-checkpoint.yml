@@ -7,9 +7,9 @@ data:
     use_visibility: True
     visibility_threshold: 0.5
     
-    # 不确定性增强配置 - 已禁用所有数据增强
+    # 不确定性增强配置
     augmentation:
-        enabled: False                  # 禁用不确定性增强
+        enabled: True                   # 是否启用不确定性增强
         augment_prob: 0.5              # 应用增强的概率
         uncertainty_scale: 50          # 方差扩大倍数
         num_uncertain_joints: 2        # 每次增强的关键点数量
