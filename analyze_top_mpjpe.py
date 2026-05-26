@@ -156,7 +156,6 @@ def run_analysis(args):
     test_generator = PoseGenerator_gmm_speedplus(
         poses_valid, poses_valid_2d, camerapara_valid, visibility_valid,
         augment_uncertainty=False,
-        global_variance_scale=1.0,
     )
 
     loader = data.DataLoader(
