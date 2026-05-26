@@ -170,13 +170,21 @@ def run_analysis(args):
     model_pose = build_model_pose(config, device)
     assert args.model_pose_path and os.path.exists(args.model_pose_path), \
         f"GCNpose 权重不存在: {args.model_pose_path}"
-    model_pose.load_state_dict(torch.load(args.model_pose_path, map_location=device)[0])
+    result = model_pose.load_state_dict(torch.load(args.model_pose_path, map_location=device)[0], strict=False)
+    if result.missing_keys:
+        logging.warning(f"GCNpose 缺失键（随机初始化）: {result.missing_keys}")
+    if result.unexpected_keys:
+        logging.warning(f"GCNpose 多余键（已忽略）: {result.unexpected_keys}")
     logging.info(f"已加载 GCNpose:  {args.model_pose_path}")
 
     model_diff = build_model_diff(config, device)
     assert args.model_diff_path and os.path.exists(args.model_diff_path), \
         f"GCNdiff 权重不存在: {args.model_diff_path}"
-    model_diff.load_state_dict(torch.load(args.model_diff_path, map_location=device)[0])
+    result = model_diff.load_state_dict(torch.load(args.model_diff_path, map_location=device)[0], strict=False)
+    if result.missing_keys:
+        logging.warning(f"GCNdiff 缺失键（随机初始化）: {result.missing_keys}")
+    if result.unexpected_keys:
+        logging.warning(f"GCNdiff 多余键（已忽略）: {result.unexpected_keys}")
     logging.info(f"已加载 GCNdiff:  {args.model_diff_path}")
 
     # ── 推理（完整 DiffPose 流程，与 test_hyber 保持一致）──────────────────────
