@@ -1,18 +1,12 @@
 """
 分析验证集中 MPJPE 最高的样本。
 
-用法（GCNpose 模型）：
+用法：
   python analyze_top_mpjpe.py \
       --config configs/speedplus_v2_diffpose.yml \
-      --model_pose_path checkpoints/gcnpose_best.pth \
-      --top_k 10
-
-用法（DiffPose 模型）：
-  python analyze_top_mpjpe.py \
-      --config configs/speedplus_v2_diffpose.yml \
-      --model_pose_path checkpoints/gcnpose_best.pth \
-      --model_diff_path checkpoints/diffpose_best.pth \
-      --top_k 10
+      --model_pose_path <gcnpose_best.pth 路径> \
+      --top_k 10 \
+      --output worst_samples.json
 """
 
 import argparse
@@ -24,13 +18,19 @@ import torch
 import torch.utils.data as data
 import torch.backends.cudnn as cudnn
 import numpy as np
-from easydict import EasyDict
 
 from models.gcnpose import GCNpose, adj_mx_from_edges
 from common.generators import PoseGenerator_gmm_speedplus
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+
+def dict2namespace(config):
+    namespace = argparse.Namespace()
+    for key, value in config.items():
+        setattr(namespace, key, dict2namespace(value) if isinstance(value, dict) else value)
+    return namespace
 
 
 def per_sample_mpjpe(predicted, target, visibility_mask):
@@ -53,7 +53,7 @@ def per_sample_mpjpe(predicted, target, visibility_mask):
 
 def load_config(config_path):
     with open(config_path, "r") as f:
-        return EasyDict(yaml.safe_load(f))
+        return dict2namespace(yaml.safe_load(f))
 
 
 def build_gcnpose(config, device):
@@ -123,25 +123,12 @@ def run_analysis(args):
     else:
         logging.warning("未提供 GCNpose 权重，使用随机初始化（结果无意义）")
 
-    # ── 可选：加载 DiffPose ─────────────────────────────────────────────────────
-    use_diff = args.model_diff_path and os.path.exists(args.model_diff_path)
-    if use_diff:
-        from models.diffpose import DiffPose
-        from runners.diffpose_frame import Diffpose
-
-        logging.info(f"已加载 DiffPose: {args.model_diff_path}")
-        # DiffPose 推理较复杂，此处仅使用 GCNpose 输出作为基础分析
-        # 若需完整 DiffPose 推理，请参考 runners/diffpose_frame.py::test_hyber
-        logging.info("注意：当前脚本仅对 GCNpose 输出计算 per-sample MPJPE。"
-                     "DiffPose 的 per-sample 分析需在 test_hyber 中扩展。")
-
     # ── 推理 ────────────────────────────────────────────────────────────────────
     torch.set_grad_enabled(False)
     model_pose.eval()
     cudnn.benchmark = True
 
     all_mpjpe = []      # List[float]，每个元素对应一个样本
-    sample_offset = 0
 
     for batch_data in loader:
         _, _, input_2d, target_3d, _, visibility, _ = batch_data
@@ -158,8 +145,6 @@ def run_analysis(args):
 
         batch_mpjpe = per_sample_mpjpe(pred_3d, target_3d, visibility)  # (B,)
         all_mpjpe.extend(batch_mpjpe.cpu().tolist())
-
-        sample_offset += target_3d.size(0)
 
     # ── 统计 Top-K ──────────────────────────────────────────────────────────────
     assert len(all_mpjpe) == len(test_actions), (
@@ -210,7 +195,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", required=True, help="YAML 配置文件路径")
     parser.add_argument("--model_pose_path", default=None, help="GCNpose 权重路径")
-    parser.add_argument("--model_diff_path", default=None, help="DiffPose 权重路径（可选）")
     parser.add_argument("--train_split", type=float, default=0.8,
                         help="训练集比例，与训练时保持一致（默认 0.8）")
     parser.add_argument("--batch_size", type=int, default=256)
