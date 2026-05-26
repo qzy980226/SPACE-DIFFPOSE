@@ -75,6 +75,7 @@ def build_model_pose(config, device):
 
 def build_model_diff(config, device):
     adj = adj_mx_diff(num_pts=11, edges=EDGES, sparse=False)
+    config.model.coords_dim = [5, 5]  # build_model_pose 会把 config 改成 [2,3]，这里还原
     if not hasattr(config.model, "use_visibility_embedding"):
         config.model.use_visibility_embedding = True
     model = GCNdiff(adj.to(device), config).to(device)
